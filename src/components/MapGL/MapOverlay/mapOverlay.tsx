@@ -10,7 +10,7 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import styles from "./index.module.scss";
 
 interface IProps {
-	layers: { id: string; show: boolean }[];
+	layerVisibility: { id: string; show: boolean }[];
 	toggleVisibility: (arg1: string) => void;
 }
 
@@ -23,7 +23,7 @@ const MapOverlay = (props: IProps) => {
 			component="nav"
 		>
 			{layerVisibility.map((layer) => (
-				<ListItemButton key={layer.id}>
+				<ListItemButton>
 					<ListItem
 						secondaryAction={
 							<IconButton

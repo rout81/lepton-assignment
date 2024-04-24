@@ -52,19 +52,52 @@ const geoJsonLayer = new GeoJsonLayer<PropertiesType>({
 	getPointRadius: 4,
 	getTextSize: 12,
 });
+const layerList = [geoJsonLayer, heatMapLayer];
 
 const MapGL = () => {
 	const [mapStyle, setMapStyle] = useState(
 		"mapbox://styles/mapbox/streets-v12",
 	);
 
-	const [layers, setLayers] = useState([
-		{ show: true, layer: heatMapLayer },
-		{ show: true, layer: geoJsonLayer },
+	const [layers, setLayers] = useState(layerList);
+	const [layerVisibility, setLayerVisibility] = useState([
+		{ id: geoJsonLayer.id, show: true },
+		{ id: heatMapLayer.id, show: true },
 	]);
 
+	useEffect(() => {
+		const heatMapLayer = new HeatmapLayer<BikeRack>({
+			id: "heatmapLayer",
+			data: "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-bike-parking.json",
+			aggregation: "SUM",
+			getPosition: (d: BikeRack) => d.COORDINATES,
+			getWeight: (d: BikeRack) => d.SPACES,
+			radiusPixels: 25,
+		});
+
+		const geoJsonLayer = new GeoJsonLayer<PropertiesType>({
+			id: "GeoJsonLayer",
+			data: locationData,
+			filled: true,
+			pointType: "circle+text",
+			pickable: true,
+			getFillColor: [12, 208, 114, 100],
+			getText: (f: Feature<Geometry, PropertiesType>) => f.properties.id,
+			getLineWidth: 20,
+			getLineColor: [12, 208, 114, 255],
+			stroked: true,
+			getPointRadius: 4,
+			getTextSize: 12,
+		});
+		const newLayerList = [geoJsonLayer, heatMapLayer];
+		const filteredLayers = newLayerList.filter(
+			(layer) => layerVisibility.find((l) => l.id === layer.id)?.show,
+		);
+		setLayers(filteredLayers);
+	}, [layerVisibility]);
+
 	const toggleVisibility = (layerId: string) => {
-		setLayers((prevLayers) => {
+		setLayerVisibility((prevLayers) => {
 			return prevLayers.map((layer) => {
 				if (layer.id === layerId) {
 					return {
@@ -82,10 +115,7 @@ const MapGL = () => {
 			<DeckGL
 				initialViewState={INITIAL_VIEW_STATE}
 				controller={true}
-				layers={layers
-					.filter((layer) => layer.show)
-					.map((layer) => layer.layer)}
-				onClick={(info) => console.log("clicked", info.object, info.coordinate)}
+				layers={layers}
 			>
 				<ReactMapGL
 					style={{ width: "100%", height: "100%" }}
@@ -94,10 +124,7 @@ const MapGL = () => {
 				/>
 				<MapStyles setMapStyle={setMapStyle} mapStyle={mapStyle} />
 				<MapOverlay
-					layers={layers.map((layer) => ({
-						id: layer.layer.id,
-						show: layer.show,
-					}))}
+					layerVisibility={layerVisibility}
 					toggleVisibility={toggleVisibility}
 				/>
 			</DeckGL>
