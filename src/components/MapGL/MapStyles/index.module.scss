@@ -1,0 +1,20 @@
+.mapStyles {
+    display: flex;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    gap: 10px;
+
+    .mapStyle {
+      cursor: pointer;
+      &:hover {
+        opacity: .7;
+      }
+      &.selectedStyle {
+        color: green;
+      }
+    }
+}

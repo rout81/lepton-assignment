@@ -1,0 +1,14 @@
+[
+	{
+		"name": "Streets",
+		"url": "mapbox://styles/mapbox/streets-v12"
+	},
+	{
+		"name": "Outdoors",
+		"url": "mapbox://styles/mapbox/outdoors-v12"
+	},
+	{
+		"name": "Satellite",
+		"url": "mapbox://styles/mapbox/satellite-v9"
+	}
+]
